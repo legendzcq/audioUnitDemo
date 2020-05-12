@@ -11,6 +11,10 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <AudioUnit/AudioUnit.h>
 #import "audioEncoder.h"
+#import <mach/mach.h>
+
+
+
 
 #define INPUT_BUS  1      ///< A I/O unit's bus 1 connects to input hardware (microphone).
 #define OUTPUT_BUS 0      ///< A I/O unit's bus 0 connects to output hardware (speaker).
@@ -29,7 +33,7 @@ uint32_t g_av_base_time = 100;
     
 }
 @property (nonatomic, strong) audioEncoder *audioEncoder;
-
+@property (nonatomic,assign)BOOL isPCMRecord;
 @end
 
 @implementation ViewController
@@ -37,7 +41,7 @@ uint32_t g_av_base_time = 100;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    _isPCMRecord = YES;
     double sampleRate = 0, duration = 0;
     [self setupEnv:&sampleRate withDuration:&duration];
     
@@ -156,7 +160,8 @@ uint32_t g_av_base_time = 100;
         asbd.mFramesPerPacket = 1;
         asbd.mSampleRate = 44100;
         asbd.mFormatID = kAudioFormatLinearPCM;
-        asbd.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
+//        asbd.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
+         asbd.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
         asbd.mChannelsPerFrame = 1;
         asbd.mBitsPerChannel = 4 * 8;//float32
         asbd.mBytesPerFrame = 4;
@@ -210,24 +215,8 @@ uint32_t g_av_base_time = 100;
         
         
         m_audioUnit = audiounit;
-        
-        //          [self initCaptureCallbackWithAudioUnit:audiounit callBack:AudioCaptureCallback];
-        
+//         [self initCaptureCallbackWithAudioUnit:audiounit callBack:AudioCaptureCallback];
 
-//        NSTimer *timer =  [NSTimer scheduledTimerWithTimeInterval:duration repeats:YES block:^(NSTimer * _Nonnull timer) {
-//            OSStatus   err = AudioUnitRender(audiounit, &renderActionFlags, &self->m_timeStamp, bus, maxFrames, &list);
-//            assert(err == 0);
-//            int64_t pts =self->m_timeStamp.mSampleTime;
-//            NSLog(@"sampleTime:%lld",pts);
-//            self->m_timeStamp.mSampleTime += maxFrames ;
-//            void    *bufferData = list.mBuffers[0].mData;
-//            UInt32   bufferSize = list.mBuffers[0].mDataByteSize;
-//
-////            [self writeFileWithInNumBytes:bufferSize ioNumPackets:maxFrames inBuffer:bufferData inPacketDesc:nil];
-//
-//            [self.audioEncoder encodeAudioWithSourceBuffer:bufferData sourceBufferSize:bufferSize pts:pts];
-//        }];
-//        [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
                 while (true) {
                     err = AudioUnitRender(audiounit, &renderActionFlags, &timeStamp, bus, maxFrames, &list);
                     assert(err == 0);
@@ -236,11 +225,24 @@ uint32_t g_av_base_time = 100;
                     timeStamp.mSampleTime += maxFrames ;
                     void    *bufferData = list.mBuffers[0].mData;
                     UInt32   bufferSize = list.mBuffers[0].mDataByteSize;
+                    if (_isPCMRecord) {
+                        [self writeFileWithInNumBytes:bufferSize ioNumPackets:maxFrames inBuffer:bufferData inPacketDesc:nil];
+                    }else
+                    {
+                        
+                        
+//                        for (int i=0; i < (bufferSize/maxFrames); i++) {
+//                            [self.audioEncoder encodeAudioWithSourceBuffer:(bufferData+ i* maxFrames) sourceBufferSize:maxFrames pts:pts];
+//                        }
+                        
+                        
+                         [self.audioEncoder encodeAudioWithSourceBuffer:bufferData sourceBufferSize:bufferSize pts:pts];
+                        
+                    }
 
-//                    [self writeFileWithInNumBytes:bufferSize ioNumPackets:maxFrames inBuffer:bufferData inPacketDesc:nil];
 
-                    [self.audioEncoder encodeAudioWithSourceBuffer:bufferData sourceBufferSize:bufferSize pts:pts];
-//                    int timeCount = 44100 * duration * maxFrames;
+//
+//                    float timeCount =   maxFrames * (1/44100) * 1000000;
 //                     sleep(timeCount);
                     [NSThread sleepForTimeInterval:duration];
 
@@ -284,7 +286,9 @@ static OSStatus AudioCaptureCallback(void                       *inRefCon,
                                      UInt32                     inBusNumber,
                                      UInt32                     inNumberFrames,
                                      AudioBufferList            *ioData) {
-    
+    if (g_av_base_time == 0) {
+        return noErr;
+    }
     AudioUnitRender(m_audioUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, m_buffList);
     //    NSLog(@"sum: %u--mNumberBuffers:%d", (unsigned int)inNumberFrames,m_buffList->mNumberBuffers);
     
@@ -307,7 +311,9 @@ static OSStatus AudioCaptureCallback(void                       *inRefCon,
     return noErr;
 }
 - (IBAction)startRecordClcik:(id)sender {
+    
      m_recordFile = [self initRecordWithFilePath:[self createFilePath:@"wav"] audioDesc:m_audioDataFormat];
+    _isPCMRecord = YES;
     
 }
 - (IBAction)startRecordAACClick:(id)sender {
@@ -315,6 +321,7 @@ static OSStatus AudioCaptureCallback(void                       *inRefCon,
     
     m_recordFile = [self initRecordWithFilePath:[self createFilePath:@"m4a"] audioDesc:self.audioEncoder->mDestinationFormat];
     self.audioEncoder->m_recordFile = m_recordFile;
+      _isPCMRecord = NO;
 }
 
 
@@ -333,7 +340,7 @@ static OSStatus AudioCaptureCallback(void                       *inRefCon,
       AudioFileID audioFile;
       // create the audio file   kAudioFileWAVEType  kAudioFileCAFType kAudioFileAAC_ADTSType
       OSStatus status = AudioFileCreateWithURL(url,
-                                                kAudioFileWAVEType,
+                                                kAudioFileAAC_ADTSType,
                                                &audioDesc,
                                                kAudioFileFlags_EraseFile,
                                                &audioFile);
@@ -389,5 +396,32 @@ static OSStatus AudioCaptureCallback(void                       *inRefCon,
     }
     
 }
-
+// 轮询检查多个线程 CPU 情况
+//- (void)updateCPU {
+//    thread_act_array_t threads;
+//    mach_msg_type_number_t threadCount = 0;
+//    const task_t thisTask = mach_task_self();
+//    kern_return_t kr = task_threads(thisTask, &threads, &threadCount);
+//    if (kr != KERN_SUCCESS) {
+//        return;
+//    }
+//    for (int i = 0; i < threadCount; i++) {
+//        thread_info_data_t threadInfo;
+//        thread_basic_info_t threadBaseInfo;
+//        mach_msg_type_number_t threadInfoCount = THREAD_INFO_MAX;
+//        if (thread_info((thread_act_t)threads[i], THREAD_BASIC_INFO, (thread_info_t)threadInfo, &threadInfoCount) == KERN_SUCCESS) {
+//            threadBaseInfo = (thread_basic_info_t)threadInfo;
+//            if (!(threadBaseInfo->flags & TH_FLAGS_IDLE)) {
+//                integer_t cpuUsage = threadBaseInfo->cpu_usage / 10;
+//                if (cpuUsage > 90) {
+//                    //cup 消耗大于 90 时打印和记录堆栈
+//                    NSString *reStr = smStackOfThread(threads[i]);
+//                    // 记录数据库中
+//                    [[[SMLagDB shareInstance] increaseWithStackString:reStr] subscribeNext:^(id x) {}];
+//                    NSLog(@"CPU useage overload thread stack：\n%@",reStr);
+//                }
+//            }
+//        }
+//    }
+//}
 @end

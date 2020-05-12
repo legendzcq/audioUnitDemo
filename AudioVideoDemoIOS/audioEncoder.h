@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
     AudioStreamBasicDescription mSourceFormat;
     AudioFileID m_recordFile;
     SInt64      m_recordCurrentPacket;
+    SInt64      m_recordDes;
 }
 - (instancetype)initWithSourceFormat:(AudioStreamBasicDescription)sourceFormat;
 
