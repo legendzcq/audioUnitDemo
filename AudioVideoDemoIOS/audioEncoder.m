@@ -12,7 +12,7 @@ struct OKConverterInfo {
     UInt32   sourceChannelsPerFrame;
     UInt32   sourceDataSize;
     void     *sourceBuffer;
-    
+    int      index;
 
 };
 
@@ -165,37 +165,44 @@ OSStatus ConverterComplexInputDataProc(AudioConverterRef              inAudioCon
                                              AudioBufferList                *ioData,
                                              AudioStreamPacketDescription   **outDataPacketDescription,
                                              void                           *inUserData) {
-    
+//    converterInfoType *info = (converterInfoType *)inUserData;
+//    ioData->mNumberBuffers              = 1;
+//    ioData->mBuffers[0].mData           = info->sourceBuffer;
+//    ioData->mBuffers[0].mNumberChannels = info->sourceChannelsPerFrame;
+//    ioData->mBuffers[0].mDataByteSize   = info->sourceDataSize;
     
      UInt32 requestedPackets = *ioNumberDataPackets;
  
-   NSLog(@"ioNumberDataPackets:%p",&ioNumberDataPackets);
+  
     converterInfoType *info = (converterInfoType *)inUserData;
     ioData->mNumberBuffers              = 1;
-    ioData->mBuffers[0].mData           = info->sourceBuffer;
+    ioData->mBuffers[0].mData           = (info->sourceBuffer+info->index*4096);
     ioData->mBuffers[0].mNumberChannels = info->sourceChannelsPerFrame;
-    ioData->mBuffers[0].mDataByteSize   = info->sourceDataSize;
-     *ioNumberDataPackets = 1024;
+    ioData->mBuffers[0].mDataByteSize   = 4096;
+     *ioNumberDataPackets = 777;
+     info->index = info->index + 1;
+     NSLog(@"ioNumberDataPackets:%p----%d----%d",&ioNumberDataPackets,requestedPackets,info->index);
     
     
     
-    
+//    AudioStreamPacketDescription * zero = outDataPacketDescription[0];
+//
+//    AudioStreamPacketDescription * one = outDataPacketDescription[1];
+//    AudioStreamPacketDescription * two = outDataPacketDescription[2];
     
 //    NSLog(@"requestedPackets:%d-----mDataByteSize:%d",requestedPackets,info->sourceDataSize);
     
 //    AudioStreamPacketDescription *packetDescriptions = malloc( sizeof(AudioStreamPacketDescription));
-//    packetDescriptions->mStartOffset = 0;
-//    packetDescriptions->mDataByteSize = info->sourceDataSize;
-//    info->sourceDataSize = info->sourceDataSize - requestedPackets;
+//    packetDescriptions->mStartOffset = info->index*4096;
+//    packetDescriptions->mDataByteSize = 4096;
 //    packetDescriptions->mVariableFramesInPacket = 0;
 //    NSLog(@"size:%d---mNumberChannels:%d---mData:%p",ioData->mBuffers[0].mDataByteSize,ioData->mBuffers[0].mNumberChannels,ioData->mBuffers[0].mData );
-    
-//     *outDataPacketDescription = NULL;
-//     *ioNumberDataPackets = 0;
+   
+
 //    if (outDataPacketDescription) {
 //          if (info->sourceDataSize) {
 ////              *ioNumberDataPackets = 1;
-//              *outDataPacketDescription = packetDescriptions;
+//              outDataPacketDescription[0] = packetDescriptions;
 //          } else {
 ////               *ioNumberDataPackets = 0;
 //              *outDataPacketDescription = NULL;
@@ -231,7 +238,7 @@ OSStatus ConverterComplexInputDataProc(AudioConverterRef              inAudioCon
     userInfo.sourceBuffer           = sourceBuffer;
     userInfo.sourceDataSize         = sourceBufferSize;
     userInfo.sourceChannelsPerFrame = mSourceFormat.mChannelsPerFrame;
-    
+    userInfo.index                  = 0;
     // Convert data
     UInt32 ioOutputDataPackets = numberOutputPackets;
     NSLog(@"ioOutputDataPackets:%p",&ioOutputDataPackets);

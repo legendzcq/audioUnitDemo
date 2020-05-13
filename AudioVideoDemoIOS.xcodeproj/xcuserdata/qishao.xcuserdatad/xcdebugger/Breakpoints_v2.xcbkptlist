@@ -87,15 +87,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "CAB3797F-816F-40C2-9ED1-3CCEBE63D20E"
+            uuid = "D90F6404-D905-4ABA-92F9-EA61F1E278E8"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AudioVideoDemoIOS/audioEncoder.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "249"
-            endingLineNumber = "249"
+            startingLineNumber = "256"
+            endingLineNumber = "256"
             landmarkName = "-encodeAudioWithSourceBuffer:sourceBufferSize:pts:"
             landmarkType = "7">
          </BreakpointContent>
