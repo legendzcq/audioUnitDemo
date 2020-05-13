@@ -172,16 +172,24 @@ OSStatus ConverterComplexInputDataProc(AudioConverterRef              inAudioCon
 //    ioData->mBuffers[0].mDataByteSize   = info->sourceDataSize;
     
      UInt32 requestedPackets = *ioNumberDataPackets;
- 
+     converterInfoType *info = (converterInfoType *)inUserData;
+     ioData->mNumberBuffers              = 1;
+     ioData->mBuffers[0].mData           = info->sourceBuffer;
+     ioData->mBuffers[0].mNumberChannels = info->sourceChannelsPerFrame;
+     ioData->mBuffers[0].mDataByteSize   = info->sourceDataSize;
   
-    converterInfoType *info = (converterInfoType *)inUserData;
-    ioData->mNumberBuffers              = 1;
-    ioData->mBuffers[0].mData           = (info->sourceBuffer+info->index*4096);
-    ioData->mBuffers[0].mNumberChannels = info->sourceChannelsPerFrame;
-    ioData->mBuffers[0].mDataByteSize   = 4096;
-     *ioNumberDataPackets = 777;
+//    converterInfoType *info = (converterInfoType *)inUserData;
+//    ioData->mNumberBuffers              = 1;
+//    ioData->mBuffers[0].mData           = (info->sourceBuffer+info->index*4096);
+//    ioData->mBuffers[0].mNumberChannels = info->sourceChannelsPerFrame;
+//    ioData->mBuffers[0].mDataByteSize   = 4096;
+//    *ioNumberDataPackets = 777;
+//    if (info->index == 1) {
+//        *ioNumberDataPackets = 0;
+//    }
+     
      info->index = info->index + 1;
-     NSLog(@"ioNumberDataPackets:%p----%d----%d",&ioNumberDataPackets,requestedPackets,info->index);
+     NSLog(@"ioNumberDataPackets:%p----%d----%d",ioData,requestedPackets,info->index);
     
     
     
@@ -249,7 +257,7 @@ OSStatus ConverterComplexInputDataProc(AudioConverterRef              inAudioCon
                                                       &fillBufferList,
                                                       &outputPacketDescriptions);
     
-//    NSLog(@"------size:%d---mNumberChannels:%d---pts:%lld",sourceBufferSize,mSourceFormat.mChannelsPerFrame,pts );
+    NSLog(@"------size:%d---mNumberChannels:%d---pts:%lld",sourceBufferSize,mSourceFormat.mChannelsPerFrame,pts );
     
     
 

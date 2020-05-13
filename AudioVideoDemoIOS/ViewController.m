@@ -239,7 +239,7 @@ uint32_t g_av_base_time = 100;
                          [self.audioEncoder encodeAudioWithSourceBuffer:bufferData sourceBufferSize:bufferSize pts:pts];
                         
                     }
-
+                    float aa = duration * 44100;
 
 //
 //                    float timeCount =   maxFrames * (1/44100) * 1000000;
