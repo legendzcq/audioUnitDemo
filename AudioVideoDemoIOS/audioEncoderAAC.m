@@ -6,7 +6,7 @@
 //  Copyright © 2020 okjiaoyu. All rights reserved.
 //
 
-#import "audioEncoder.h"
+#import "audioEncoderAAC.h"
 
 struct OKConverterInfo {
     UInt32   sourceChannelsPerFrame;
@@ -20,7 +20,7 @@ typedef struct OKConverterInfo converterInfoType;
 
 
 
-@implementation audioEncoder
+@implementation audioEncoderAAC
 
 - (instancetype)initWithSourceFormat:(AudioStreamBasicDescription)sourceFormat {
     if (self = [super init]) {
@@ -44,7 +44,7 @@ typedef struct OKConverterInfo converterInfoType;
     destinationFormat.mFramesPerPacket = 1024; // 每个packet的帧数。如果是未压缩的音频数据，值是1。动态帧率格式，这个值是一个较大的固定数字，比如说AAC的1024。如果是动态大小帧数（比如Ogg格式）设置为0。
 
 //    kMPEG4Object_AAC_Main    kMPEG4Object_AAC_LC
-    destinationFormat.mFormatFlags = kMPEG4Object_AAC_Main; // 无损编码 ，0表示没有
+    destinationFormat.mFormatFlags = kMPEG4Object_AAC_LC; // 无损编码 ，0表示没有
 //    destinationFormat.mBytesPerPacket = 0; // 每一个packet的音频数据大小。如果的动态大小，设置为0。动态大小的格式，需要用AudioStreamPacketDescription 来确定每个packet的大小。
 //    destinationFormat.mFramesPerPacket = 1024; // 每个packet的帧数。如果是未压缩的音频数据，值是1。动态帧率格式，这个值是一个较大的固定数字，比如说AAC的1024。如果是动态大小帧数（比如Ogg格式）设置为0。
 //    destinationFormat.mBytesPerFrame = 0; //  每帧的大小。每一帧的起始点到下一帧的起始点。如果是压缩格式，设置为0 。
@@ -233,6 +233,9 @@ OSStatus ConverterComplexInputDataProc(AudioConverterRef              inAudioCon
     UInt32 numberOutputPackets = 4;
     UInt32 theOutputBufferSize = sourceBufferSize;
     AudioStreamPacketDescription outputPacketDescriptions;
+    outputPacketDescriptions.mStartOffset = 4096;
+    outputPacketDescriptions.mDataByteSize = theOutputBufferSize;
+    outputPacketDescriptions.mVariableFramesInPacket = 0;
     
     // Set up output buffer list.
     AudioBufferList fillBufferList = {};

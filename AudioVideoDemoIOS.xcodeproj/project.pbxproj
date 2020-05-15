@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C67FCD192465323A0066B6BD /* audioEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = C67FCD182465323A0066B6BD /* audioEncoder.m */; };
+		C67FBDEB246D242400BC316B /* audioUnitPcm.m in Sources */ = {isa = PBXBuildFile; fileRef = C67FBDEA246D242400BC316B /* audioUnitPcm.m */; };
+		C67FBDF3246E2A1F00BC316B /* tempData.pcm in Resources */ = {isa = PBXBuildFile; fileRef = C67FBDF2246E2A1F00BC316B /* tempData.pcm */; };
+		C67FCD192465323A0066B6BD /* audioEncoderAAC.m in Sources */ = {isa = PBXBuildFile; fileRef = C67FCD182465323A0066B6BD /* audioEncoderAAC.m */; };
+		C6933EB6246CE6010048ADF4 /* audioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = C6933EB5246CE6010048ADF4 /* audioPlayer.m */; };
 		D2BB40142462DA600038F200 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D2BB40132462DA600038F200 /* AppDelegate.m */; };
 		D2BB40172462DA600038F200 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D2BB40162462DA600038F200 /* SceneDelegate.m */; };
 		D2BB401A2462DA600038F200 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2BB40192462DA600038F200 /* ViewController.m */; };
@@ -21,8 +24,14 @@
 
 /* Begin PBXFileReference section */
 		C669D1AD2462F50B007F0909 /* AudioVideoDemoIOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AudioVideoDemoIOS.entitlements; sourceTree = "<group>"; };
-		C67FCD172465323A0066B6BD /* audioEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = audioEncoder.h; sourceTree = "<group>"; };
-		C67FCD182465323A0066B6BD /* audioEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = audioEncoder.m; sourceTree = "<group>"; };
+		C67FBDE9246D242400BC316B /* audioUnitPcm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = audioUnitPcm.h; sourceTree = "<group>"; };
+		C67FBDEA246D242400BC316B /* audioUnitPcm.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = audioUnitPcm.m; sourceTree = "<group>"; };
+		C67FBDF2246E2A1F00BC316B /* tempData.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; name = tempData.pcm; path = ../../../Desktop/record/tempData.pcm; sourceTree = "<group>"; };
+		C67FBDF4246E3C4700BC316B /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		C67FCD172465323A0066B6BD /* audioEncoderAAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = audioEncoderAAC.h; sourceTree = "<group>"; };
+		C67FCD182465323A0066B6BD /* audioEncoderAAC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = audioEncoderAAC.m; sourceTree = "<group>"; };
+		C6933EB4246CE6010048ADF4 /* audioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = audioPlayer.h; sourceTree = "<group>"; };
+		C6933EB5246CE6010048ADF4 /* audioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = audioPlayer.m; sourceTree = "<group>"; };
 		D2BB400F2462DA600038F200 /* AudioVideoDemoIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioVideoDemoIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2BB40122462DA600038F200 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		D2BB40132462DA600038F200 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -73,6 +82,7 @@
 		D2BB40112462DA600038F200 /* AudioVideoDemoIOS */ = {
 			isa = PBXGroup;
 			children = (
+				C67FBDF2246E2A1F00BC316B /* tempData.pcm */,
 				C669D1AD2462F50B007F0909 /* AudioVideoDemoIOS.entitlements */,
 				D2BB40122462DA600038F200 /* AppDelegate.h */,
 				D2BB40132462DA600038F200 /* AppDelegate.m */,
@@ -85,8 +95,13 @@
 				D2BB40202462DA610038F200 /* LaunchScreen.storyboard */,
 				D2BB40232462DA610038F200 /* Info.plist */,
 				D2BB40242462DA610038F200 /* main.m */,
-				C67FCD172465323A0066B6BD /* audioEncoder.h */,
-				C67FCD182465323A0066B6BD /* audioEncoder.m */,
+				C67FCD172465323A0066B6BD /* audioEncoderAAC.h */,
+				C67FCD182465323A0066B6BD /* audioEncoderAAC.m */,
+				C6933EB4246CE6010048ADF4 /* audioPlayer.h */,
+				C6933EB5246CE6010048ADF4 /* audioPlayer.m */,
+				C67FBDE9246D242400BC316B /* audioUnitPcm.h */,
+				C67FBDEA246D242400BC316B /* audioUnitPcm.m */,
+				C67FBDF4246E3C4700BC316B /* PrefixHeader.pch */,
 			);
 			path = AudioVideoDemoIOS;
 			sourceTree = "<group>";
@@ -160,6 +175,7 @@
 			files = (
 				D2BB40222462DA610038F200 /* LaunchScreen.storyboard in Resources */,
 				D2BB401F2462DA610038F200 /* Assets.xcassets in Resources */,
+				C67FBDF3246E2A1F00BC316B /* tempData.pcm in Resources */,
 				D2BB401D2462DA600038F200 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -173,9 +189,11 @@
 			files = (
 				D2BB401A2462DA600038F200 /* ViewController.m in Sources */,
 				D2BB40142462DA600038F200 /* AppDelegate.m in Sources */,
+				C67FBDEB246D242400BC316B /* audioUnitPcm.m in Sources */,
 				D2BB40252462DA610038F200 /* main.m in Sources */,
-				C67FCD192465323A0066B6BD /* audioEncoder.m in Sources */,
+				C67FCD192465323A0066B6BD /* audioEncoderAAC.m in Sources */,
 				D2BB40172462DA600038F200 /* SceneDelegate.m in Sources */,
+				C6933EB6246CE6010048ADF4 /* audioPlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,6 +336,8 @@
 				CODE_SIGN_ENTITLEMENTS = AudioVideoDemoIOS/AudioVideoDemoIOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = YNLT3B3J7K;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/AudioVideoDemoIOS/PrefixHeader.pch";
 				INFOPLIST_FILE = AudioVideoDemoIOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -337,6 +357,8 @@
 				CODE_SIGN_ENTITLEMENTS = AudioVideoDemoIOS/AudioVideoDemoIOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = YNLT3B3J7K;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/AudioVideoDemoIOS/PrefixHeader.pch";
 				INFOPLIST_FILE = AudioVideoDemoIOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface audioEncoder : NSObject
+@interface audioEncoderAAC : NSObject
 {
     @public
     AudioConverterRef           mAudioConverter;
