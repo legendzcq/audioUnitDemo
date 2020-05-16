@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 @import AudioToolbox;
-#import "audioPlayer.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,10 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (readonly, nonatomic, strong) NSURL *sourceURL;
 
-//@property (readonly, nonatomic, strong) NSURL *destinationURL;
 
 -(void)startDecode;
-@property (nonatomic, strong) audioPlayer *audioPlay;
 
 @end
 

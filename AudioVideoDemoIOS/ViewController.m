@@ -17,10 +17,6 @@
 @property (nonatomic, strong) audioPlayer *audioPlay;
 @property (nonatomic, strong) audioDecodePCM * decodePcm;
 
-
-
-@property (nonatomic, strong) NSURL *sourceURL;
-@property (nonatomic, strong) NSURL *destinationURL;
 @end
 
 @implementation ViewController
@@ -31,6 +27,7 @@
 
     //采集pcm 以及 pcm-> aac
     self.audioPcm = [[audioUnitPcm alloc] init];
+
     // 播放pcm 数据，包含一些对缺失数据的处理
     self.audioPlay = [[audioPlayer alloc] init];
     
@@ -54,6 +51,7 @@
 
 }
 - (IBAction)startRecordData:(id)sender {
+    self.audioPcm.pcmPath = [self createFilePath1];
      [self.audioPcm startSample];
     [self.audioPcm strartRecordData];
    
@@ -89,9 +87,7 @@
     return filePath;
 }
 - (NSString *)createFilePath{
-//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//    dateFormatter.dateFormat = @"yyyy_MM_dd__HH_mm_ss";
-//    NSString *date = [dateFormatter stringFromDate:[NSDate date]];
+
     NSString *date = @"abcd";
     NSArray *searchPaths    = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                                   NSUserDomainMask,
@@ -112,11 +108,10 @@
 
 - (IBAction)startDecodeClick:(id)sender {
     
-    self.sourceURL = [NSURL URLWithString:[self createFilePath]];
+    NSURL * sourceURL = [NSURL URLWithString:[self createFilePath]];
       
     
-    self.decodePcm = [[audioDecodePCM alloc] initWithSourceURL:self.sourceURL ];
-    self.decodePcm.audioPlay = self.audioPlay;
+    self.decodePcm = [[audioDecodePCM alloc] initWithSourceURL:sourceURL ];
     [self.decodePcm startDecode];
     [self.audioPlay playWithURL:[self createFilePath1]];
 }

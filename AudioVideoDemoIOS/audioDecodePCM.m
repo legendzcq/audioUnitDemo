@@ -327,13 +327,6 @@ static OSStatus EncoderDataProc(AudioConverterRef inAudioConverter, UInt32 *ioNu
             if (ioOutputDataPackets == 0) {
                 // This is the EOF condition.
                 [_outpusStream close];
-//                NSThread *thread = [[NSThread alloc] initWithBlock:^() {
-//
-//                    audioPlayer *audioPlay = [[audioPlayer alloc] init];
-//                    [audioPlay playWithMemory:self.outpusStream];
-//                }];
-//                [thread start];
-
                 error = noErr;
                 break;
             }
