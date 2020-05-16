@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface audioPlayer : NSObject
 @property (nonatomic, weak) id<OKPlayerDelegate> delegate;
 
-- (void)play:(NSString *)url;
+-(void)playWithMemory:(NSStream *)stream;
+-(void)playWithURL:(NSString *)urlStr;
 
 - (double)getCurrentTime;
 @end

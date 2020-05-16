@@ -18,6 +18,8 @@ typedef enum : NSUInteger {
 
 @interface audioUnitPcm : NSObject
 @property (nonatomic,copy) NSString * pcmPath;
+@property (nonatomic,copy) NSString * aacPath;
+
 @property (nonatomic ) recordType  type;
 
 - (void)startRecordClcik;

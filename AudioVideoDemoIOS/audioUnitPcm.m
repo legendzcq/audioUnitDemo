@@ -177,8 +177,8 @@ uint32_t g_av_base_time = 100;
         asbd.mFramesPerPacket = 1;
         asbd.mSampleRate = 44100;
         asbd.mFormatID = kAudioFormatLinearPCM;
-//        asbd.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
-         asbd.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
+        //        asbd.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
+        asbd.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsPacked;
         asbd.mChannelsPerFrame = 1;
         asbd.mBitsPerChannel = 4 * 8;//float32
         asbd.mBytesPerFrame = 4;
@@ -188,11 +188,11 @@ uint32_t g_av_base_time = 100;
         assert(err == 0);
         m_audioDataFormat  =  asbd;
         self.audioEncoder = [[audioEncoderAAC alloc] initWithSourceFormat:asbd];
-
-      [self printAudioStreamBasicDescription:asbd];
-
+        
+        [self printAudioStreamBasicDescription:asbd];
+        
     }
-
+    
     UInt32 maxFrames = (UInt32) ceil(sampleRate * duration);
     {
         NSLog(@"maxFrames: %u", maxFrames);
@@ -201,7 +201,7 @@ uint32_t g_av_base_time = 100;
     
     err = AudioUnitInitialize(audiounit);
     assert(err == 0);
-
+    
     err = AudioOutputUnitStart(audiounit);
     assert(err == 0);
     
@@ -233,52 +233,53 @@ uint32_t g_av_base_time = 100;
         
         
         m_audioUnit = audiounit;
-//         [self initCaptureCallbackWithAudioUnit:audiounit callBack:AudioCaptureCallback];
+        //         [self initCaptureCallbackWithAudioUnit:audiounit callBack:AudioCaptureCallback];
+        [outpusStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 
-                while (_isLoop) {
-                    
-                    err = AudioUnitRender(audiounit, &renderActionFlags, &timeStamp, bus, maxFrames, &list);
-                    assert(err == 0);
-                    int64_t pts =timeStamp.mSampleTime;
-//                     NSLog(@"sampleTime:%lld",pts);
-                    timeStamp.mSampleTime += maxFrames ;
-                    void    *bufferData = list.mBuffers[0].mData;
-                    UInt32   bufferSize = list.mBuffers[0].mDataByteSize;
-                    if (recordTypeWAV == _type) {
-                        [self writeFileWithInNumBytes:bufferSize ioNumPackets:maxFrames inBuffer:bufferData inPacketDesc:nil];
-                                                
-                    }else if(recordTypeM4A == _type)
-                    {
-                        
-                        
-//                        for (int i=0; i < (bufferSize/maxFrames); i++) {
-//                            [self.audioEncoder encodeAudioWithSourceBuffer:(bufferData+ i* maxFrames) sourceBufferSize:maxFrames pts:pts];
-//                        }
-                        
-                        
-                         [self.audioEncoder encodeAudioWithSourceBuffer:bufferData sourceBufferSize:bufferSize pts:pts];
-                        
-                    }else if (recordTypeDATA == _type) {
- 
-                        [outpusStream write:bufferData maxLength:TEMPDataByteSize];
-                        tempCount += 1;
-                        
-//                        break;
-                    }
+        while (_isLoop) {
+            
+            err = AudioUnitRender(audiounit, &renderActionFlags, &timeStamp, bus, maxFrames, &list);
+            assert(err == 0);
+            int64_t pts =timeStamp.mSampleTime;
+            //                     NSLog(@"sampleTime:%lld",pts);
+            timeStamp.mSampleTime += maxFrames ;
+            void    *bufferData = list.mBuffers[0].mData;
+            UInt32   bufferSize = list.mBuffers[0].mDataByteSize;
+            if (recordTypeWAV == _type) {
+                [self writeFileWithInNumBytes:bufferSize ioNumPackets:maxFrames inBuffer:bufferData inPacketDesc:nil];
+                
+            }else if(recordTypeM4A == _type)
+            {
+                
+                
+                //                        for (int i=0; i < (bufferSize/maxFrames); i++) {
+                //                            [self.audioEncoder encodeAudioWithSourceBuffer:(bufferData+ i* maxFrames) sourceBufferSize:maxFrames pts:pts];
+                //                        }
+                
+                
+                [self.audioEncoder encodeAudioWithSourceBuffer:bufferData sourceBufferSize:bufferSize pts:pts];
+                
+            }else if (recordTypeDATA == _type) {
 
-
-//
-//                    float timeCount =   maxFrames * (1/44100) * 1000000;
-//                     sleep(timeCount);
-                    [NSThread sleepForTimeInterval:duration];
-
-                }
+                [outpusStream write:bufferData maxLength:TEMPDataByteSize];
+                tempCount += 1;
+                
+                //                        break;
+            }
+            
+            
+            //
+            //                    float timeCount =   maxFrames * (1/44100) * 1000000;
+            //                     sleep(timeCount);
+            [NSThread sleepForTimeInterval:duration];
+            
+        }
         
     }
-
+    
     
     NSLog(@"testAudioUnit finished");
-
+    
 }
 -(void)stopSampleRate {
     OSStatus err;
@@ -350,10 +351,11 @@ static OSStatus AudioCaptureCallback(void                       *inRefCon,
 - (void)startRecordAACClick {
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        
-        self->m_recordFile = [self initRecordWithFilePath:[self createFilePath:@"m4a"] audioDesc:self.audioEncoder->mDestinationFormat];
+       self.aacPath =  [self createFilePath:@"m4a"];
+        self->m_recordFile = [self initRecordWithFilePath:self.aacPath audioDesc:self.audioEncoder->mDestinationFormat];
         self.audioEncoder->m_recordFile = self->m_recordFile;
         self->_type = recordTypeM4A;
+       
     });
     
 }
@@ -382,7 +384,7 @@ static OSStatus AudioCaptureCallback(void                       *inRefCon,
       AudioFileID audioFile;
       // create the audio file   kAudioFileWAVEType  kAudioFileCAFType kAudioFileAAC_ADTSType
       OSStatus status = AudioFileCreateWithURL(url,
-                                                kAudioFileWAVEType,
+                                                kAudioFileAAC_ADTSType,
                                                &audioDesc,
                                                kAudioFileFlags_EraseFile,
                                                &audioFile);
@@ -396,10 +398,10 @@ static OSStatus AudioCaptureCallback(void                       *inRefCon,
 }
 
 - (NSString *)createFilePath:(NSString *)type {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"yyyy_MM_dd__HH_mm_ss";
-    NSString *date = [dateFormatter stringFromDate:[NSDate date]];
-    
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    dateFormatter.dateFormat = @"yyyy_MM_dd__HH_mm_ss";
+//    NSString *date = [dateFormatter stringFromDate:[NSDate date]];
+    NSString *date = @"abcd";
     NSArray *searchPaths    = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                                   NSUserDomainMask,
                                                                   YES);

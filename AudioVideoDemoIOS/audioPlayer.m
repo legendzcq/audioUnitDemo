@@ -17,6 +17,10 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
 #define INPUT_BUS 1
 #define OUTPUT_BUS 0
 
+@interface audioPlayer() <NSStreamDelegate>
+
+@end
+
 @implementation audioPlayer
 {
     AudioUnit audioUnit;
@@ -36,19 +40,14 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
 }
 
 -(void)initData{
-    NSURL *url = [[NSBundle mainBundle] URLForResource:@"tempData" withExtension:@"pcm"];
+    NSURL *url = [[NSBundle mainBundle] URLForResource:@"pcmData" withExtension:@"pcm"];
     backSteam = [NSInputStream inputStreamWithURL:url];
     if (!backSteam) {
         NSLog(@"打开文件失败 %@", url);
     }
     else {
-        [inputSteam open];
+        [backSteam open];
     }
-}
-
-- (void)play:(NSString *)url {
-    [self initPlayer:url];
-    AudioOutputUnitStart(audioUnit);
 }
 
 
@@ -61,17 +60,32 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
     return timeInterval;
 }
 
-
-
-- (void)initPlayer:(NSString *)urlStr {
+-(void)playWithURL:(NSString *)urlStr{
     // open pcm stream
     inputSteam = [NSInputStream inputStreamWithFileAtPath:urlStr];
+    inputSteam.delegate = self;
     if (!inputSteam) {
         NSLog(@"打开文件失败 %@", urlStr);
     }
     else {
         [inputSteam open];
     }
+    
+    [self initPlayer:inputSteam];
+}
+-(void)playWithMemory:(NSStream *)stream {
+    inputSteam =(NSInputStream *) stream;
+    if (!inputSteam) {
+           NSLog(@"打开文件失败");
+       }
+       else {
+           [inputSteam open];
+       }
+    [self initPlayer:inputSteam];
+}
+
+- (void)initPlayer:(NSInputStream *)inputSteam {
+
     
     NSError *error = nil;
     OSStatus status = noErr;
@@ -148,6 +162,8 @@ const uint32_t CONST_BUFFER_SIZE = 0x10000;
     
     
     OSStatus result = AudioUnitInitialize(audioUnit);
+    AudioOutputUnitStart(audioUnit);
+
     NSLog(@"result %d", result);
 }
 
@@ -160,18 +176,20 @@ static OSStatus PlayCallback(void *inRefCon,
                              AudioBufferList *ioData) {
     audioPlayer *player = (__bridge audioPlayer *)inRefCon;
     
-    //    ioData->mBuffers[0].mDataByteSize = (UInt32)[player->inputSteam read:ioData->mBuffers[0].mData maxLength:(NSInteger)ioData->mBuffers[0].mDataByteSize];;
+        ioData->mBuffers[0].mDataByteSize = (UInt32)[player->inputSteam read:ioData->mBuffers[0].mData maxLength:(NSInteger)ioData->mBuffers[0].mDataByteSize];;
     
-    
-    void*  tempData = malloc(inNumberFrames * 4 * sizeof(char));
-    NSInteger count=  [player->inputSteam read:tempData maxLength:TEMPDataByteSize];
-    [player->backSteam read:(tempData +TEMPDataByteSize) maxLength:(inNumberFrames * 4- TEMPDataByteSize)];
-    
-    
-    //
-    ioData->mBuffers[0].mData = tempData;
-    ioData->mBuffers[0].mDataByteSize = TEMPDataByteSize;
+    NSInteger count= ioData->mBuffers[0].mDataByteSize;
+//    void*  tempData = malloc(inNumberFrames * 4 * sizeof(char));
+//    NSInteger count=  [player->inputSteam read:tempData maxLength:TEMPDataByteSize];
+//    [player->backSteam read:(tempData +TEMPDataByteSize) maxLength:(inNumberFrames * 4- TEMPDataByteSize)];
+//
+//
+//    //
+//    ioData->mBuffers[0].mData = tempData;
+//    ioData->mBuffers[0].mDataByteSize = TEMPDataByteSize;
     NSLog(@"out size: %d---count:%ld", ioData->mBuffers[0].mDataByteSize,(long)count);
+//
+//    free(tempData);
     
     if (count <= 0) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -230,4 +248,7 @@ static OSStatus PlayCallback(void *inRefCon,
     printf("Bits per Channel:    %10d\n",    (unsigned int)asbd.mBitsPerChannel);
     printf("\n");
 }
+#pragma mark ---
+
+
 @end
